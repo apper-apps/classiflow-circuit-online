@@ -1,0 +1,141 @@
+[
+  {
+    "Id": 1,
+    "categoryId": 2,
+    "userId": "user1",
+    "title": "Beautiful 3BR Colonial Home with Large Yard",
+    "description": "Stunning colonial home featuring 3 bedrooms, 2.5 bathrooms, updated kitchen with granite countertops, hardwood floors throughout, and a spacious backyard perfect for entertaining. Located in a quiet neighborhood with excellent schools nearby.",
+    "price": 425000,
+    "images": [
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800",
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "123 Maple Street",
+      "city": "Springfield",
+      "state": "MA",
+      "zipCode": "01109"
+    },
+    "package": "featured",
+    "status": "active",
+    "expiresAt": "2024-03-15T00:00:00Z",
+    "views": 342,
+    "customData": {
+      "bedrooms": 3,
+      "bathrooms": 2.5,
+      "squareFeet": 2400
+    }
+  },
+  {
+    "Id": 2,
+    "categoryId": 5,
+    "userId": "user2",
+    "title": "2018 Honda Civic - Low Mileage, Excellent Condition",
+    "description": "Well-maintained 2018 Honda Civic with only 35,000 miles. Single owner, non-smoker, garage-kept. Recent oil change and inspection. Excellent fuel economy and reliability. Clean title, no accidents.",
+    "price": 18500,
+    "images": [
+      "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800",
+      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "456 Oak Avenue",
+      "city": "Boston",
+      "state": "MA",
+      "zipCode": "02101"
+    },
+    "package": "premium",
+    "status": "active",
+    "expiresAt": "2024-02-28T00:00:00Z",
+    "views": 178,
+    "customData": {
+      "year": 2018,
+      "make": "Honda",
+      "model": "Civic",
+      "mileage": 35000
+    }
+  },
+  {
+    "Id": 3,
+    "categoryId": 8,
+    "userId": "user3",
+    "title": "iPhone 14 Pro Max - 256GB, Space Black",
+    "description": "Like-new iPhone 14 Pro Max in Space Black with 256GB storage. Purchased 6 months ago, always used with case and screen protector. Battery health at 98%. Includes original box, charger, and documentation.",
+    "price": 899,
+    "images": [
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800",
+      "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "789 Pine Road",
+      "city": "Cambridge",
+      "state": "MA",
+      "zipCode": "02139"
+    },
+    "package": "basic",
+    "status": "active",
+    "expiresAt": "2024-02-20T00:00:00Z",
+    "views": 89,
+    "customData": {
+      "condition": "Like New"
+    }
+  },
+  {
+    "Id": 4,
+    "categoryId": 10,
+    "userId": "user4",
+    "title": "Professional Kitchen Renovation Services",
+    "description": "Transform your kitchen with our expert renovation services. 15+ years experience in custom cabinetry, countertop installation, flooring, and complete kitchen makeovers. Licensed, insured, and locally owned. Free estimates and design consultation.",
+    "price": null,
+    "images": [
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800",
+      "https://images.unsplash.com/photo-1556909045-f8ff3d0c1b7d?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "Service Area",
+      "city": "Greater Boston",
+      "state": "MA",
+      "zipCode": "02101"
+    },
+    "package": "featured",
+    "status": "active",
+    "expiresAt": "2024-03-10T00:00:00Z",
+    "views": 156,
+    "customData": {
+      "serviceArea": "Greater Boston Area",
+      "availability": "Weekdays"
+    }
+  },
+  {
+    "Id": 5,
+    "categoryId": 3,
+    "userId": "user5",
+    "title": "Modern 2BR Apartment in Downtown - Available March 1st",
+    "description": "Stunning modern apartment in the heart of downtown featuring 2 bedrooms, 2 bathrooms, in-unit laundry, stainless steel appliances, and floor-to-ceiling windows with city views. Building amenities include fitness center and rooftop deck.",
+    "price": 2800,
+    "images": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
+      "https://images.unsplash.com/photo-1486304873000-235643847519?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "321 Commercial Street",
+      "city": "Boston",
+      "state": "MA",
+      "zipCode": "02109"
+    },
+    "package": "premium",
+    "status": "active",
+    "expiresAt": "2024-02-25T00:00:00Z",
+    "views": 203,
+    "customData": {
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "squareFeet": 1200
+    }
+  }
+]

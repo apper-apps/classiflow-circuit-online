@@ -1,0 +1,106 @@
+[
+  {
+    "Id": 1,
+    "name": "Real Estate",
+    "slug": "real-estate",
+    "parentId": null,
+    "icon": "Home",
+    "listingCount": 45,
+    "customFields": [
+      {"name": "bedrooms", "type": "number", "required": true},
+      {"name": "bathrooms", "type": "number", "required": true},
+      {"name": "squareFeet", "type": "number", "required": false}
+    ]
+  },
+  {
+    "Id": 2,
+    "name": "Houses for Sale",
+    "slug": "houses-for-sale",
+    "parentId": 1,
+    "icon": "Building",
+    "listingCount": 32,
+    "customFields": []
+  },
+  {
+    "Id": 3,
+    "name": "Apartments for Rent",
+    "slug": "apartments-for-rent",
+    "parentId": 1,
+    "icon": "Building2",
+    "listingCount": 13,
+    "customFields": []
+  },
+  {
+    "Id": 4,
+    "name": "Vehicles",
+    "slug": "vehicles",
+    "parentId": null,
+    "icon": "Car",
+    "listingCount": 78,
+    "customFields": [
+      {"name": "year", "type": "number", "required": true},
+      {"name": "make", "type": "text", "required": true},
+      {"name": "model", "type": "text", "required": true},
+      {"name": "mileage", "type": "number", "required": false}
+    ]
+  },
+  {
+    "Id": 5,
+    "name": "Cars",
+    "slug": "cars",
+    "parentId": 4,
+    "icon": "Car",
+    "listingCount": 56,
+    "customFields": []
+  },
+  {
+    "Id": 6,
+    "name": "Trucks & SUVs",
+    "slug": "trucks-suvs",
+    "parentId": 4,
+    "icon": "Truck",
+    "listingCount": 22,
+    "customFields": []
+  },
+  {
+    "Id": 7,
+    "name": "For Sale",
+    "slug": "for-sale",
+    "parentId": null,
+    "icon": "ShoppingCart",
+    "listingCount": 124,
+    "customFields": [
+      {"name": "condition", "type": "select", "options": ["New", "Like New", "Good", "Fair"], "required": true}
+    ]
+  },
+  {
+    "Id": 8,
+    "name": "Electronics",
+    "slug": "electronics",
+    "parentId": 7,
+    "icon": "Smartphone",
+    "listingCount": 67,
+    "customFields": []
+  },
+  {
+    "Id": 9,
+    "name": "Services",
+    "slug": "services",
+    "parentId": null,
+    "icon": "Wrench",
+    "listingCount": 89,
+    "customFields": [
+      {"name": "serviceArea", "type": "text", "required": true},
+      {"name": "availability", "type": "select", "options": ["Weekdays", "Weekends", "24/7"], "required": false}
+    ]
+  },
+  {
+    "Id": 10,
+    "name": "Home Improvement",
+    "slug": "home-improvement",
+    "parentId": 9,
+    "icon": "Hammer",
+    "listingCount": 34,
+    "customFields": []
+  }
+]

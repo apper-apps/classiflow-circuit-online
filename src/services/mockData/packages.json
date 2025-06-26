@@ -1,0 +1,53 @@
+[
+  {
+    "Id": 1,
+    "name": "Basic",
+    "price": 15,
+    "duration": 30,
+    "features": [
+      "30-day listing",
+      "Up to 3 images",
+      "Basic description",
+      "Contact information"
+    ],
+    "imageLimit": 3,
+    "videoAllowed": false,
+    "highlighted": false
+  },
+  {
+    "Id": 2,
+    "name": "Featured",
+    "price": 35,
+    "duration": 45,
+    "features": [
+      "45-day listing",
+      "Up to 8 images",
+      "Featured placement",
+      "Rich text description",
+      "Priority in search results",
+      "Contact information"
+    ],
+    "imageLimit": 8,
+    "videoAllowed": false,
+    "highlighted": true
+  },
+  {
+    "Id": 3,
+    "name": "Premium",
+    "price": 65,
+    "duration": 60,
+    "features": [
+      "60-day listing",
+      "Up to 15 images",
+      "Video upload",
+      "Top placement",
+      "Featured badge",
+      "Rich text description",
+      "Priority support",
+      "Analytics dashboard"
+    ],
+    "imageLimit": 15,
+    "videoAllowed": true,
+    "highlighted": true
+  }
+]

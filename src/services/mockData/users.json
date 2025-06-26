@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "email": "john@example.com",
+    "name": "John Smith",
+    "role": "user",
+    "listings": [1],
+    "createdAt": "2024-01-15T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "email": "sarah@example.com",
+    "name": "Sarah Johnson",
+    "role": "user",
+    "listings": [2],
+    "createdAt": "2024-01-10T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "email": "mike@example.com",
+    "name": "Mike Chen",
+    "role": "user",
+    "listings": [3],
+    "createdAt": "2024-01-20T00:00:00Z"
+  },
+  {
+    "Id": 4,
+    "email": "admin@classiflow.com",
+    "name": "Admin User",
+    "role": "admin",
+    "listings": [],
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "Id": 5,
+    "email": "lisa@example.com",
+    "name": "Lisa Rodriguez",
+    "role": "user",
+    "listings": [4, 5],
+    "createdAt": "2024-01-05T00:00:00Z"
+  }
+]
