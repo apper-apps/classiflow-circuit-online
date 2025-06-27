@@ -22,9 +22,57 @@ function Layout() {
     ['home', 'browse', 'postAd', 'myListings'].includes(route.id)
   );
 
-const adminNavItems = routeArray.filter(route => 
+  const adminNavItems = routeArray.filter(route => 
     ['admin', 'categories', 'branding', 'teams', 'embeds'].includes(route.id)
   );
+
+  // Authentication handlers
+  const handleAccountSetup = () => {
+    window.location.href = '/account-setup';
+  };
+
+  const handleLogin = () => {
+    // For demo, simulate login with first user
+    const demoUser = { 
+      Id: 1, 
+      name: 'Demo User', 
+      email: 'demo@example.com',
+      role: 'user'
+    };
+    setCurrentUser(demoUser);
+    localStorage.setItem('currentUser', JSON.stringify(demoUser));
+    setShowUserMenu(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+    setShowUserMenu(false);
+  };
+
+  // Load user on mount
+  React.useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      try {
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (error) {
+        localStorage.removeItem('currentUser');
+      }
+    }
+  }, []);
+
+  // Close user menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.relative')) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -40,7 +88,7 @@ const adminNavItems = routeArray.filter(route =>
             </button>
             <h1 className="text-xl font-bold text-surface-900">ClassiFlow Pro</h1>
           </div>
-<div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-2 bg-surface-100 rounded-lg px-3 py-2">
               <ApperIcon name="Search" size={16} className="text-surface-500" />
               <input
@@ -201,56 +249,8 @@ const adminNavItems = routeArray.filter(route =>
           <Outlet />
         </main>
       </div>
-</div>
+    </div>
   );
-
-  // Authentication handlers
-  const handleAccountSetup = () => {
-    window.location.href = '/account-setup';
-  };
-
-  const handleLogin = () => {
-    // For demo, simulate login with first user
-    const demoUser = { 
-      Id: 1, 
-      name: 'Demo User', 
-      email: 'demo@example.com',
-      role: 'user'
-    };
-    setCurrentUser(demoUser);
-    localStorage.setItem('currentUser', JSON.stringify(demoUser));
-    setShowUserMenu(false);
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem('currentUser');
-    setShowUserMenu(false);
-  };
-
-  // Load user on mount
-  React.useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      try {
-        setCurrentUser(JSON.parse(savedUser));
-      } catch (error) {
-        localStorage.removeItem('currentUser');
-      }
-    }
-  }, []);
-
-  // Close user menu when clicking outside
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showUserMenu && !event.target.closest('.relative')) {
-        setShowUserMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showUserMenu]);
 }
 
 export default Layout;
