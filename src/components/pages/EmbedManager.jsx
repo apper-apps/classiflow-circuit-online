@@ -481,19 +481,39 @@ const generateEmbedCode = (embed) => {
                 <p className="text-surface-600">No embed configurations found</p>
               </div>
             ) : (
-              <div className="space-y-3">
+<div className="space-y-3">
                 {embeds.map((embed) => (
                   <div
                     key={embed.Id}
                     className="flex items-center justify-between p-4 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
                   >
                     <div className="flex-1">
-                      <h4 className="font-medium text-surface-900">{embed.name}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-medium text-surface-900">{embed.name}</h4>
+                        <span className={`
+                          px-2 py-0.5 text-xs font-medium rounded-full
+                          ${embed.type === 'classiflow' 
+                            ? 'bg-primary/10 text-primary' 
+                            : 'bg-surface-100 text-surface-600'
+                          }
+                        `}>
+                          {embed.type === 'classiflow' ? 'ClassiFlow' : 'External'}
+                        </span>
+                      </div>
                       <p className="text-sm text-surface-600 truncate max-w-xs">
-                        {embed.url}
+                        {embed.type === 'classiflow' 
+                          ? `Categories: ${embed.categories?.length === 0 ? 'All' : embed.categories?.length || 0}`
+                          : embed.url
+                        }
                       </p>
                       <div className="flex items-center gap-4 mt-1 text-xs text-surface-500">
                         <span>{embed.width} × {embed.height}</span>
+                        {embed.type === 'classiflow' && (
+                          <span className="flex items-center gap-1">
+                            <ApperIcon name="List" size={12} />
+                            Max: {embed.maxListings || 50}
+                          </span>
+                        )}
                         {embed.allowFullscreen && (
                           <span className="flex items-center gap-1">
                             <ApperIcon name="Maximize" size={12} />
@@ -509,10 +529,25 @@ const generateEmbedCode = (embed) => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <CopyToClipboard
+                        text={generateEmbedCode(embed)}
+                        onCopy={() => {
+                          toast.success(`Embed code for "${embed.name}" copied to clipboard`);
+                        }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Copy embed code"
+                        >
+                          <ApperIcon name="Copy" size={16} />
+                        </Button>
+                      </CopyToClipboard>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(embed)}
+                        title="Edit configuration"
                       >
                         <ApperIcon name="Edit" size={16} />
                       </Button>
@@ -521,6 +556,7 @@ const generateEmbedCode = (embed) => {
                         size="sm"
                         onClick={() => handleDelete(embed)}
                         className="text-error hover:text-error hover:bg-error/10"
+                        title="Delete configuration"
                       >
                         <ApperIcon name="Trash2" size={16} />
                       </Button>
