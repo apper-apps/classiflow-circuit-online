@@ -8,15 +8,29 @@ function App() {
   return (
     <BrowserRouter>
       <div className="h-screen bg-surface-50">
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            {routeArray.map((route) => (
+<Routes>
+          {/* Public embed routes (no layout) */}
+          {routeArray
+            .filter(route => route.isPublic)
+            .map((route) => (
               <Route
                 key={route.id}
                 path={route.path}
                 element={<route.component />}
               />
             ))}
+          
+          {/* Main application routes (with layout) */}
+          <Route path="/" element={<Layout />}>
+            {routeArray
+              .filter(route => !route.isPublic)
+              .map((route) => (
+                <Route
+                  key={route.id}
+                  path={route.path}
+                  element={<route.component />}
+                />
+              ))}
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

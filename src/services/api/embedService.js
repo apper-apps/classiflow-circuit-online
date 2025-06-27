@@ -28,22 +28,30 @@ const embedService = {
     return { ...embed };
   },
 
-  async create(embedData) {
+async create(embedData) {
     await delay(500);
     
-    if (!embedData.name || !embedData.url) {
-      throw new Error('Name and URL are required');
+    if (!embedData.name) {
+      throw new Error('Name is required');
+    }
+
+    if (embedData.type === 'external' && !embedData.url) {
+      throw new Error('URL is required for external embeds');
     }
 
     const newEmbed = {
       Id: nextId++,
       name: embedData.name,
-      url: embedData.url,
+      type: embedData.type || 'external',
+      url: embedData.url || '',
       width: embedData.width || '100%',
       height: embedData.height || '400',
       allowFullscreen: embedData.allowFullscreen !== false,
       sandbox: embedData.sandbox !== false,
       description: embedData.description || '',
+      categories: embedData.categories || [],
+      showSearch: embedData.showSearch !== false,
+      maxListings: embedData.maxListings || 12,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -52,7 +60,7 @@ const embedService = {
     return { ...newEmbed };
   },
 
-  async update(id, embedData) {
+async update(id, embedData) {
     await delay(500);
     
     const parsedId = parseInt(id);
@@ -65,19 +73,27 @@ const embedService = {
       throw new Error('Embed configuration not found');
     }
 
-    if (!embedData.name || !embedData.url) {
-      throw new Error('Name and URL are required');
+    if (!embedData.name) {
+      throw new Error('Name is required');
+    }
+
+    if (embedData.type === 'external' && !embedData.url) {
+      throw new Error('URL is required for external embeds');
     }
 
     const updatedEmbed = {
       ...embeds[index],
       name: embedData.name,
-      url: embedData.url,
+      type: embedData.type || embeds[index].type || 'external',
+      url: embedData.url || '',
       width: embedData.width || '100%',
       height: embedData.height || '400',
       allowFullscreen: embedData.allowFullscreen !== false,
       sandbox: embedData.sandbox !== false,
       description: embedData.description || '',
+      categories: embedData.categories || [],
+      showSearch: embedData.showSearch !== false,
+      maxListings: embedData.maxListings || 12,
       updatedAt: new Date().toISOString()
     };
 

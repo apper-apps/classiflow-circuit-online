@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import FormField from '@/components/molecules/FormField';
-import ErrorState from '@/components/atoms/ErrorState';
-import SkeletonLoader from '@/components/atoms/SkeletonLoader';
-import embedService from '@/services/api/embedService';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import ApperIcon from "@/components/ApperIcon";
+import ErrorState from "@/components/atoms/ErrorState";
+import SkeletonLoader from "@/components/atoms/SkeletonLoader";
+import Button from "@/components/atoms/Button";
+import FormField from "@/components/molecules/FormField";
+import embedService from "@/services/api/embedService";
 
 function EmbedManager() {
   const [embeds, setEmbeds] = useState([]);
@@ -106,8 +107,30 @@ function EmbedManager() {
       ...prev,
       [field]: value
     }));
+};
+
+  const generateEmbedCode = (embed) => {
+    if (!embed) return '';
+    
+    const sandboxAttr = embed.sandbox ? ' sandbox="allow-scripts allow-same-origin"' : '';
+    const allowFullscreenAttr = embed.allowFullscreen ? ' allowfullscreen' : '';
+    
+    return `<iframe
+  src="${embed.url}"
+  width="${embed.width}"
+  height="${embed.height}"${sandboxAttr}${allowFullscreenAttr}
+  frameborder="0"
+  title="${embed.name || 'Embed'}"
+></iframe>`;
   };
 
+  const handleCopyEmbedCode = (embed) => {
+    if (!embed) {
+      toast.error('No embed selected');
+      return;
+    }
+    toast.success('Embed code copied to clipboard');
+  };
   if (loading) {
     return (
       <div className="p-6">
@@ -331,7 +354,7 @@ function EmbedManager() {
           </div>
         </div>
 
-        {/* Live Preview */}
+{/* Live Preview & Embed Code */}
         <div className="space-y-6">
           <div className="bg-white rounded-xl border border-surface-200 p-6">
             <h2 className="text-xl font-semibold text-surface-900 mb-4 flex items-center gap-2">
@@ -339,47 +362,113 @@ function EmbedManager() {
               Live Preview
             </h2>
             
-            {formData.url ? (
+            {(formData.url || formData.type === 'classiflow') ? (
               <div className="space-y-4">
                 <div className="p-4 bg-surface-50 rounded-lg">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-medium text-surface-700">URL:</span>
-                      <p className="text-surface-600 truncate">{formData.url}</p>
+                      <span className="font-medium text-surface-700">Type:</span>
+                      <p className="text-surface-600 capitalize">{formData.type}</p>
                     </div>
                     <div>
                       <span className="font-medium text-surface-700">Dimensions:</span>
                       <p className="text-surface-600">{formData.width} × {formData.height}</p>
                     </div>
                   </div>
+                  {formData.type === 'classiflow' && (
+                    <div className="mt-2 text-sm">
+                      <span className="font-medium text-surface-700">Categories:</span>
+                      <p className="text-surface-600">
+                        {formData.categories.length === 0 
+                          ? 'All Categories' 
+                          : `${formData.categories.length} selected`}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="border border-surface-200 rounded-lg overflow-hidden">
-                  <iframe
-                    src={formData.url}
-                    width={formData.width}
-                    height={formData.height}
-                    allowFullScreen={formData.allowFullscreen}
-                    sandbox={formData.sandbox ? "allow-scripts allow-same-origin" : undefined}
-                    className="w-full"
-                    title={formData.name || 'Embed Preview'}
-                  />
+                  {formData.type === 'classiflow' ? (
+                    <div className="p-8 bg-surface-50 text-center">
+                      <ApperIcon name="Monitor" size={48} className="mx-auto text-surface-400 mb-4" />
+                      <p className="text-surface-600 mb-2">ClassiFlow Embed Preview</p>
+                      <p className="text-sm text-surface-500">
+                        Preview will be available after saving the configuration
+                      </p>
+                    </div>
+                  ) : (
+                    <iframe
+                      src={formData.url}
+                      width={formData.width}
+                      height={formData.height}
+                      allowFullScreen={formData.allowFullscreen}
+                      sandbox={formData.sandbox ? "allow-scripts allow-same-origin" : undefined}
+                      className="w-full"
+                      title={formData.name || 'Embed Preview'}
+                    />
+                  )}
                 </div>
                 
                 <div className="text-xs text-surface-500 space-y-1">
                   <p>• Security: {formData.sandbox ? 'Sandboxed' : 'No sandbox'}</p>
                   <p>• Fullscreen: {formData.allowFullscreen ? 'Allowed' : 'Disabled'}</p>
+                  {formData.type === 'classiflow' && (
+                    <>
+                      <p>• Search: {formData.showSearch ? 'Enabled' : 'Disabled'}</p>
+                      <p>• Max Listings: {formData.maxListings}</p>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="text-center py-12">
                 <ApperIcon name="Globe" size={48} className="mx-auto text-surface-400 mb-4" />
                 <p className="text-surface-600">
-                  Enter a URL in the configuration form to see the live preview
+                  {formData.type === 'external' 
+                    ? 'Enter a URL in the configuration form to see the live preview'
+                    : 'Configure ClassiFlow embed settings to see the preview'}
                 </p>
               </div>
             )}
           </div>
+
+          {/* Embed Code Generator */}
+          {selectedEmbed && (
+            <div className="bg-white rounded-xl border border-surface-200 p-6">
+              <h3 className="text-lg font-semibold text-surface-900 mb-4 flex items-center gap-2">
+                <ApperIcon name="Code" size={18} />
+                Embed Code
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="relative">
+                  <pre className="bg-surface-900 text-surface-100 p-4 rounded-lg text-sm overflow-x-auto">
+                    <code>{generateEmbedCode(selectedEmbed)}</code>
+                  </pre>
+                  <CopyToClipboard
+                    text={generateEmbedCode(selectedEmbed)}
+                    onCopy={() => handleCopyEmbedCode(selectedEmbed)}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute top-2 right-2 bg-surface-800 hover:bg-surface-700 text-surface-200"
+                    >
+                      <ApperIcon name="Copy" size={16} />
+                      Copy
+                    </Button>
+                  </CopyToClipboard>
+                </div>
+                
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <ApperIcon name="Info" size={16} className="inline mr-2" />
+                    Copy this code and paste it into your website's HTML where you want the embed to appear.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

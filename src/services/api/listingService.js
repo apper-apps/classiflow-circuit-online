@@ -62,6 +62,47 @@ class ListingService {
       return b.Id - a.Id; // Newer listings first
     });
 
+return filteredListings;
+  }
+
+  async getEmbedListings(embedConfig = {}) {
+    await delay(300);
+    let filteredListings = this.listings.filter(listing => listing.status === 'active');
+
+    // Filter by categories if specified
+    if (embedConfig.categories && embedConfig.categories.length > 0) {
+      filteredListings = filteredListings.filter(listing => 
+        embedConfig.categories.includes(listing.categoryId)
+      );
+    }
+
+    // Apply search if provided
+    if (embedConfig.search) {
+      const searchLower = embedConfig.search.toLowerCase();
+      filteredListings = filteredListings.filter(listing =>
+        listing.title.toLowerCase().includes(searchLower) ||
+        listing.description.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Sort by package priority and creation date
+    filteredListings.sort((a, b) => {
+      const packagePriority = { premium: 3, featured: 2, basic: 1 };
+      const aPriority = packagePriority[a.package] || 0;
+      const bPriority = packagePriority[b.package] || 0;
+      
+      if (aPriority !== bPriority) {
+        return bPriority - aPriority;
+      }
+      
+      return b.Id - a.Id; // Newer listings first
+    });
+
+    // Limit results if specified
+    if (embedConfig.maxListings) {
+      filteredListings = filteredListings.slice(0, embedConfig.maxListings);
+    }
+
     return filteredListings;
   }
 

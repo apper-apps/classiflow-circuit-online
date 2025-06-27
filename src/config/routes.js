@@ -1,14 +1,15 @@
 import React from "react";
-import CategoryManager from "@/components/pages/CategoryManager";
-import AdminDashboard from "@/components/pages/AdminDashboard";
-import Browse from "@/components/pages/Browse";
-import PostAd from "@/components/pages/PostAd";
-import BrandingManager from "@/components/pages/BrandingManager";
-import Home from "@/components/pages/Home";
 import ListingDetail from "@/components/pages/ListingDetail";
+import EmbedManager from "@/components/pages/EmbedManager";
 import MyListings from "@/components/pages/MyListings";
 import TeamManager from "@/components/pages/TeamManager";
-import EmbedManager from "@/components/pages/EmbedManager";
+import AdminDashboard from "@/components/pages/AdminDashboard";
+import Browse from "@/components/pages/Browse";
+import BrandingManager from "@/components/pages/BrandingManager";
+import Home from "@/components/pages/Home";
+import PostAd from "@/components/pages/PostAd";
+import CategoryManager from "@/components/pages/CategoryManager";
+import EmbedViewer from "@/components/pages/EmbedViewer";
 export const routes = {
   home: {
     id: 'home',
@@ -80,12 +81,20 @@ component: TeamManager
     icon: 'MessageCircle',
     component: React.lazy(() => import('@/components/pages/MessageCenter'))
   },
-  listingDetail: {
+listingDetail: {
     id: 'listingDetail',
     label: 'Listing Detail',
     path: '/listing/:id',
     icon: 'Eye',
     component: ListingDetail
+  },
+  embedViewer: {
+    id: 'embedViewer',
+    label: 'Embed Viewer',
+    path: '/embed/:embedId',
+    icon: 'Monitor',
+    component: EmbedViewer,
+    isPublic: true
   }
 };
 

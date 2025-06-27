@@ -9,7 +9,21 @@ class CategoryService {
 
   async getAll() {
     await delay(200);
-    return [...this.categories];
+return [...this.categories];
+  }
+
+  async getPublicCategories() {
+    await delay(150);
+    // Return only top-level categories for embed filtering
+    const publicCategories = this.categories
+      .filter(cat => cat.parentId === null && cat.listingCount > 0)
+      .map(cat => ({
+        Id: cat.Id,
+        name: cat.name,
+        icon: cat.icon,
+        listingCount: cat.listingCount
+      }));
+    return [...publicCategories];
   }
 
   async getById(id) {
