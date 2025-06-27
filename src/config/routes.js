@@ -92,9 +92,22 @@ listingDetail: {
     id: 'embedViewer',
     label: 'Embed Viewer',
     path: '/embed/:embedId',
-    icon: 'Monitor',
-    component: EmbedViewer,
+component: EmbedViewer,
     isPublic: true
+  },
+  paymentSuccess: {
+    id: 'paymentSuccess',
+    label: 'Payment Success',
+    path: '/payment/success',
+    icon: 'CheckCircle',
+    component: React.lazy(() => import('@/components/pages/PaymentSuccess'))
+  },
+  paymentCancel: {
+    id: 'paymentCancel',
+    label: 'Payment Cancelled',
+    path: '/payment/cancel',
+    icon: 'XCircle',
+    component: React.lazy(() => import('@/components/pages/PaymentCancel'))
   }
 };
 

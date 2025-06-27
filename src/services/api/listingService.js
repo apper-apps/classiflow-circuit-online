@@ -119,14 +119,17 @@ return filteredListings;
     return { ...listing };
   }
 
-  async create(listingData) {
+async create(listingData) {
     await delay(400);
     const maxId = Math.max(...this.listings.map(item => item.Id), 0);
     const newListing = {
       Id: maxId + 1,
       ...listingData,
       views: 0,
-      status: 'pending',
+      status: listingData.paymentStatus === 'completed' ? 'active' : 'pending',
+      paymentStatus: listingData.paymentStatus || 'pending',
+      paymentIntentId: listingData.paymentIntentId || null,
+      createdAt: new Date().toISOString(),
       customData: listingData.customData || {}
     };
     

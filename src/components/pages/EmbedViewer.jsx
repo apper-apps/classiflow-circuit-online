@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import ApperIcon from '@/components/ApperIcon';
-import ListingCard from '@/components/molecules/ListingCard';
-import SearchBar from '@/components/molecules/SearchBar';
-import SkeletonLoader from '@/components/atoms/SkeletonLoader';
-import ErrorState from '@/components/atoms/ErrorState';
-import EmptyState from '@/components/atoms/EmptyState';
-import embedService from '@/services/api/embedService';
-import listingService from '@/services/api/listingService';
-import categoryService from '@/services/api/categoryService';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ApperIcon from "@/components/ApperIcon";
+import ErrorState from "@/components/atoms/ErrorState";
+import EmptyState from "@/components/atoms/EmptyState";
+import SkeletonLoader from "@/components/atoms/SkeletonLoader";
+import ListingCard from "@/components/molecules/ListingCard";
+import SearchBar from "@/components/molecules/SearchBar";
+import listingService from "@/services/api/listingService";
+import categoryService from "@/services/api/categoryService";
+import embedService from "@/services/api/embedService";
 
 function EmbedViewer() {
   const { embedId } = useParams();
@@ -106,15 +106,14 @@ function EmbedViewer() {
   }
 
   return (
-    <div 
-      className="min-h-screen p-4" 
-      style={{ 
-        fontFamily: 'inherit',
-        backgroundColor: 'var(--embed-bg-color, #f8fafc)',
-        color: 'var(--embed-text-color, #1e293b)'
-      }}
-    >
-      <style>{`
+    <div
+    className="min-h-screen p-4"
+    style={{
+        fontFamily: "inherit",
+        backgroundColor: "var(--embed-bg-color, #f8fafc)",
+        color: "var(--embed-text-color, #1e293b)"
+    }}>
+    <style>{`
         /* CSS Reset for embed */
         * {
           box-sizing: border-box;
@@ -164,89 +163,75 @@ function EmbedViewer() {
           transform: translateY(-1px);
         }
       `}</style>
-      
-      <div className="max-w-6xl mx-auto embed-container">
+    <div className="max-w-6xl mx-auto embed-container">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">
-            {embed.name}
-          </h1>
-          {embed.description && (
-            <p className="text-sm opacity-70">
-              {embed.description}
-            </p>
-          )}
+            <h1 className="text-2xl font-bold mb-2">
+                {embed.name}
+            </h1>
+            {embed.description && <p className="text-sm opacity-70">
+                {embed.description}
+            </p>}
         </div>
-
         {/* Search and Filters */}
-        {embed.showSearch && (
-          <div className="mb-6 space-y-4">
+        {embed.showSearch && <div className="mb-6 space-y-4">
             <SearchBar
-              placeholder="Search listings..."
-              onSearch={handleSearch}
-              className="max-w-md"
-            />
-            
-            {categories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+                placeholder="Search listings..."
+                onSearch={handleSearch}
+                className="max-w-md" />
+            {categories.length > 0 && <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => handleCategoryChange('')}
-                  className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                    selectedCategory === '' 
-                      ? 'embed-button' 
-                      : 'border-current opacity-60 hover:opacity-80'
-                  }`}
-                >
-                  All Categories
-                </button>
-                {categories.map((category) => (
-                  <button
+                    onClick={() => handleCategoryChange("")}
+                    className={`px-3 py-1 text-sm rounded-full border transition-colors ${selectedCategory === "" ? "embed-button" : "border-current opacity-60 hover:opacity-80"}`}>All Categories
+                                    </button>
+                {categories.map(category => <button
                     key={category.Id}
                     onClick={() => handleCategoryChange(category.Id.toString())}
-                    className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                      selectedCategory === category.Id.toString() 
-                        ? 'embed-button' 
-                        : 'border-current opacity-60 hover:opacity-80'
-                    }`}
-                  >
-                    {category.name} ({category.listingCount})
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
+                    className={`px-3 py-1 text-sm rounded-full border transition-colors ${selectedCategory === category.Id.toString() ? "embed-button" : "border-current opacity-60 hover:opacity-80"}`}>
+                    {category.name}({category.listingCount})
+                                      </button>)}
+            </div>}
+        </div>}
         {/* Listings Grid */}
-        {listings.length === 0 ? (
-          <div className="text-center py-12">
+        {listings.length === 0 ? <div className="text-center py-12">
             <EmptyState
-              icon="Search"
-              title="No listings found"
-              description={searchQuery ? "No listings match your search criteria." : "No listings available at this time."}
-            />
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {listings.map((listing) => (
-              <div key={listing.Id} className="embed-card">
-                <ListingCard
-                  listing={listing}
-                  showActions={false}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+                icon="Search"
+                title="No listings found"
+                description={searchQuery ? "No listings match your search criteria." : "No listings available at this time."} />
+        </div> : <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {listings.map(listing => <div key={listing.Id} className="embed-card">
+                <ListingCard listing={listing} showActions={false} />
+            </div>)}
+        </div>})
 
-        {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-current opacity-20 text-center">
-          <p className="text-xs opacity-60">
-            Powered by ClassiFlow Pro
-          </p>
+                {/* Footer */}
+        <div
+            className="mt-8 pt-6 border-t border-current opacity-20 text-center space-y-4">
+            <div className="flex items-center justify-center gap-4">
+                <button
+                    onClick={() => {
+                        if (window.parent) {
+                            window.parent.postMessage({
+                                type: "OPEN_POST_AD",
+
+                                data: {
+                                    embedId: embedId
+                                }
+                            }, "*");
+                        } else {
+                            window.open("/post", "_blank");
+                        }
+                    }}
+                    className="embed-button text-sm px-4 py-2">
+                    <span className="flex items-center gap-2">
+                        <ApperIcon name="Plus" size={16} />Post Your Ad
+                                      </span>
+                </button>
+            </div>
+            <p className="text-xs opacity-60">Powered by ClassiFlow Pro
+                          </p>
         </div>
-      </div>
-    </div>
+    </div></div>
   );
 }
 

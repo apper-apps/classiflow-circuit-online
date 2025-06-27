@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import FormField from '@/components/molecules/FormField';
-import PackageSelector from '@/components/organisms/PackageSelector';
-import categoryService from '@/services/api/categoryService';
-import listingService from '@/services/api/listingService';
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { loadStripe } from "@stripe/stripe-js";
+import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
+import paymentService from "@/services/api/paymentService";
+import ApperIcon from "@/components/ApperIcon";
+import PackageSelector from "@/components/organisms/PackageSelector";
+import Button from "@/components/atoms/Button";
+import FormField from "@/components/molecules/FormField";
+import listingService from "@/services/api/listingService";
+import categoryService from "@/services/api/categoryService";
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_example');
 const PostAd = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -27,10 +31,11 @@ const PostAd = () => {
       zipCode: ''
     },
     customData: {}
-  });
+});
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
   const steps = [
     { id: 1, title: 'Choose Package', icon: 'Package' },
     { id: 2, title: 'Category & Details', icon: 'FileText' },
@@ -125,31 +130,77 @@ const PostAd = () => {
       images: [...prev.images, ...imageUrls].slice(0, selectedPackage?.imageLimit || 15)
     }));
   };
+const initializePayment = async () => {
+    if (!selectedPackage) return;
 
-  const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
-
-    setLoading(true);
     try {
-      const listingData = {
-        ...formData,
-        package: selectedPackage.name.toLowerCase(),
-        price: formData.price ? parseFloat(formData.price) : null,
-        expiresAt: new Date(Date.now() + selectedPackage.duration * 24 * 60 * 60 * 1000).toISOString(),
-        userId: 'current-user' // In real app, get from auth context
-      };
-
-      await listingService.create(listingData);
-      
-      toast.success('Listing created successfully!');
-      navigate('/my-listings');
+      setLoading(true);
+      const { clientSecret } = await paymentService.createPaymentIntent({
+        amount: selectedPackage.price * 100, // Convert to cents
+        currency: 'usd',
+        metadata: {
+          packageId: selectedPackage.Id,
+          packageName: selectedPackage.name
+        }
+      });
+      setClientSecret(clientSecret);
     } catch (error) {
-      toast.error(error.message || 'Failed to create listing');
+      toast.error('Failed to initialize payment');
+      console.error('Payment initialization error:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (currentStep === 4 && selectedPackage && !clientSecret) {
+      initializePayment();
+    }
+  }, [currentStep, selectedPackage]);
+
+  const handleSubmit = async (stripe, elements) => {
+    if (!validateStep(currentStep) || !stripe || !elements || !clientSecret) return;
+
+    setPaymentProcessing(true);
+    try {
+      const cardElement = elements.getElement(CardElement);
+      
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: formData.title, // Use listing title as billing name
+          },
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (paymentIntent.status === 'succeeded') {
+        const listingData = {
+          ...formData,
+          package: selectedPackage.name.toLowerCase(),
+          price: formData.price ? parseFloat(formData.price) : null,
+          expiresAt: new Date(Date.now() + selectedPackage.duration * 24 * 60 * 60 * 1000).toISOString(),
+          userId: 'current-user', // In real app, get from auth context
+          paymentIntentId: paymentIntent.id,
+          paymentStatus: 'completed'
+        };
+
+        await listingService.create(listingData);
+        
+        toast.success('Payment successful! Your listing is now live.');
+        navigate('/payment/success?listing_id=' + Date.now());
+      }
+    } catch (error) {
+      toast.error(error.message || 'Payment failed');
+    } finally {
+      setPaymentProcessing(false);
+    }
+  };
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -404,30 +455,25 @@ const PostAd = () => {
               </div>
             </div>
 
-            {/* Payment Form */}
+{/* Payment Form */}
             <div className="bg-white border border-surface-200 rounded-lg p-6 space-y-4">
               <h3 className="font-semibold text-surface-900">Payment Information</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  label="Card Number"
-                  placeholder="1234 5678 9012 3456"
-                  icon="CreditCard"
-                />
-                <FormField
-                  label="Cardholder Name"
-                  placeholder="John Smith"
-                />
-                <FormField
-                  label="Expiry Date"
-                  placeholder="MM/YY"
-                />
-                <FormField
-                  label="CVV"
-                  placeholder="123"
-                  type="password"
-                />
-              </div>
+              {clientSecret ? (
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <PaymentForm 
+                    onSubmit={handleSubmit}
+                    loading={paymentProcessing}
+                  />
+                </Elements>
+              ) : (
+                <div className="flex items-center justify-center py-8">
+                  <div className="flex items-center gap-2 text-surface-600">
+                    <ApperIcon name="Loader2" size={20} className="animate-spin" />
+                    <span>Initializing secure payment...</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -514,22 +560,65 @@ const PostAd = () => {
               >
                 Next
               </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                loading={loading}
-                icon="CreditCard"
-                variant="accent"
-                size="lg"
-              >
-                Pay & Publish Listing
-              </Button>
+) : (
+              <div id="payment-button-container">
+                {/* Payment button is rendered within PaymentForm component */}
+              </div>
             )}
           </div>
         </div>
-      </div>
+</div>
     </div>
   );
 };
 
-export default PostAd;
+// Payment Form Component
+const PaymentForm = ({ onSubmit, loading }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!stripe || !elements) return;
+    await onSubmit(stripe, elements);
+  };
+
+  const cardElementOptions = {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+      },
+    },
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-surface-700 mb-2">
+          Card Information
+        </label>
+        <div className="p-3 border border-surface-300 rounded-lg">
+          <CardElement options={cardElementOptions} />
+        </div>
+      </div>
+      
+      <div className="pt-4">
+        <Button
+          type="submit"
+          loading={loading}
+          disabled={!stripe || loading}
+          icon="CreditCard"
+          variant="accent"
+          size="lg"
+          className="w-full"
+        >
+          {loading ? 'Processing Payment...' : 'Pay & Publish Listing'}
+        </Button>
+      </div>
+    </form>
+  );
+};
