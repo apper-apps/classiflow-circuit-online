@@ -290,49 +290,56 @@ const renderCategory = (category, level = 0) => {
     const childCategories = getChildCategories(category.Id).sort((a, b) => (a.position || 0) - (b.position || 0));
 
     return (
-      <SortableCategory
-        key={category.Id}
-        category={category}
-        level={level}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onAddSub={(category) => {
-          setEditingCategory(null);
-          setFormData({ name: '', icon: 'Folder', parentId: category.Id });
-          setShowModal(true);
-        }}
-      >
-        <AnimatePresence>
-          {hasChildren && isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
+      <div key={category.Id}>
+        <SortableCategory
+          category={category}
+          level={level}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onAddSub={(category) => {
+            setEditingCategory(null);
+            setFormData({ name: '', icon: 'Folder', parentId: category.Id });
+            setShowModal(true);
+            // Auto-expand the parent category to show new subcategory
+            setExpandedCategories(prev => new Set([...prev, category.Id]));
+          }}
+        />
+        
+        {hasChildren && (
+          <div className="ml-6 border-l border-surface-200 pl-4">
+            <button
+              onClick={() => toggleExpanded(category.Id)}
+              className="flex items-center gap-2 text-sm text-surface-600 hover:text-surface-900 mb-2 mt-2"
             >
-              <div className="ml-6 border-l border-surface-200 pl-4">
-                <button
-                  onClick={() => toggleExpanded(category.Id)}
-                  className="flex items-center gap-2 text-sm text-surface-600 hover:text-surface-900 mb-2"
+              <ApperIcon 
+                name={isExpanded ? "ChevronDown" : "ChevronRight"} 
+                size={14} 
+              />
+              {isExpanded ? 'Collapse' : 'Expand'} subcategories ({childCategories.length})
+            </button>
+            
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
                 >
-                  <ApperIcon 
-                    name={isExpanded ? "ChevronDown" : "ChevronRight"} 
-                    size={14} 
-                  />
-                  {isExpanded ? 'Collapse' : 'Expand'} subcategories
-                </button>
-                
-                <SortableContext
-                  items={childCategories.map(child => child.Id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {childCategories.map(child => renderCategory(child, level + 1))}
-                </SortableContext>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </SortableCategory>
+                  <SortableContext
+                    items={childCategories.map(child => child.Id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-2">
+                      {childCategories.map(child => renderCategory(child, level + 1))}
+                    </div>
+                  </SortableContext>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
     );
   };
 
