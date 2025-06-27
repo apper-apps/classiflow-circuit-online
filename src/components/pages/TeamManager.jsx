@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import Badge from '@/components/atoms/Badge';
-import Input from '@/components/atoms/Input';
-import SkeletonLoader from '@/components/atoms/SkeletonLoader';
-import ErrorState from '@/components/atoms/ErrorState';
-import teamService from '@/services/api/teamService';
-import userService from '@/services/api/userService';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import teamService from "@/services/api/teamService";
+import userService from "@/services/api/userService";
+import ApperIcon from "@/components/ApperIcon";
+import SkeletonLoader from "@/components/atoms/SkeletonLoader";
+import Badge from "@/components/atoms/Badge";
+import ErrorState from "@/components/atoms/ErrorState";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 
 const TeamManager = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -391,11 +391,10 @@ const TeamManager = () => {
                 </Button>
               </div>
             </form>
-          </motion.div>
+</motion.div>
         </div>
       )}
     </div>
   );
 };
-
 export default TeamManager;
