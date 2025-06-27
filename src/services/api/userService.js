@@ -65,8 +65,52 @@ class UserService {
   async getCurrentUser() {
     await delay(100);
     // For demo purposes, return the first admin user
-    const adminUser = this.users.find(user => user.role === 'admin');
+const adminUser = this.users.find(user => user.role === 'admin');
     return adminUser ? { ...adminUser } : null;
+  }
+
+  async updateRole(id, role) {
+    await delay(250);
+    const index = this.users.findIndex(user => user.Id === parseInt(id, 10));
+    if (index === -1) {
+      throw new Error('User not found');
+    }
+
+    const validRoles = ['user', 'admin', 'super_admin'];
+    if (!validRoles.includes(role)) {
+      throw new Error('Invalid role specified');
+    }
+
+    this.users[index] = {
+      ...this.users[index],
+      role
+    };
+
+    return { ...this.users[index] };
+  }
+
+  async acceptInvitation(email, userData) {
+    await delay(300);
+    const existingUser = this.users.find(user => 
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+
+    if (existingUser) {
+      // Update existing user with additional data
+      const index = this.users.findIndex(user => user.Id === existingUser.Id);
+      this.users[index] = {
+        ...this.users[index],
+        ...userData,
+        Id: this.users[index].Id // Prevent ID modification
+      };
+      return { ...this.users[index] };
+    } else {
+      // Create new user
+      return await this.create({
+        email,
+        ...userData
+      });
+    }
   }
 }
 

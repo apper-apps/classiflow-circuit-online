@@ -1,11 +1,13 @@
-import Home from '@/components/pages/Home';
-import Browse from '@/components/pages/Browse';
-import PostAd from '@/components/pages/PostAd';
-import MyListings from '@/components/pages/MyListings';
-import AdminDashboard from '@/components/pages/AdminDashboard';
-import CategoryManager from '@/components/pages/CategoryManager';
-import BrandingManager from '@/components/pages/BrandingManager';
-import ListingDetail from '@/components/pages/ListingDetail';
+import React from "react";
+import CategoryManager from "@/components/pages/CategoryManager";
+import AdminDashboard from "@/components/pages/AdminDashboard";
+import Browse from "@/components/pages/Browse";
+import PostAd from "@/components/pages/PostAd";
+import BrandingManager from "@/components/pages/BrandingManager";
+import Home from "@/components/pages/Home";
+import ListingDetail from "@/components/pages/ListingDetail";
+import MyListings from "@/components/pages/MyListings";
+import TeamManager from "@/components/pages/TeamManager";
 export const routes = {
   home: {
     id: 'home',
@@ -42,12 +44,12 @@ export const routes = {
     icon: 'Settings',
     component: AdminDashboard
   },
-  categories: {
+categories: {
     id: 'categories',
     label: 'Categories',
     path: '/admin/categories',
     icon: 'FolderTree',
-component: CategoryManager
+    component: CategoryManager
   },
   branding: {
     id: 'branding',
@@ -55,6 +57,13 @@ component: CategoryManager
     path: '/admin/branding',
     icon: 'Palette',
     component: BrandingManager
+  },
+  teams: {
+    id: 'teams',
+    label: 'Team Management',
+    path: '/admin/teams',
+    icon: 'Users',
+    component: TeamManager
   },
   listingDetail: {
     id: 'listingDetail',

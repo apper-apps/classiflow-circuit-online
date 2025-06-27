@@ -277,9 +277,9 @@ const AdminDashboard = () => {
             </h3>
           </div>
           <div className="p-6 space-y-3">
-            {[
+{[
               { label: 'Manage Categories', icon: 'FolderTree', href: '/admin/categories' },
-              { label: 'User Management', icon: 'Users', href: '#' },
+              { label: 'Team Management', icon: 'Users', href: '/admin/teams' },
               { label: 'Payment Settings', icon: 'CreditCard', href: '#' },
               { label: 'Site Settings', icon: 'Settings', href: '#' },
               { label: 'Export Reports', icon: 'Download', href: '#' },

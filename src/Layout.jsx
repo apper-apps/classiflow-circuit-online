@@ -12,7 +12,7 @@ function Layout() {
   );
 
 const adminNavItems = routeArray.filter(route => 
-    ['admin', 'categories', 'branding'].includes(route.id)
+    ['admin', 'categories', 'branding', 'teams'].includes(route.id)
   );
 
   return (

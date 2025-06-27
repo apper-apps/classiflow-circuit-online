@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 1,
+    "email": "admin@classiflow.com",
+    "name": "Admin User",
+    "role": "super_admin",
+    "status": "active",
+    "invitedBy": null,
+    "invitedAt": null,
+    "joinedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "Id": 2,
+    "email": "manager@classiflow.com",
+    "name": "Team Manager",
+    "role": "admin",
+    "status": "active",
+    "invitedBy": 1,
+    "invitedAt": "2024-01-15T00:00:00Z",
+    "joinedAt": "2024-01-16T00:00:00Z"
+  },
+  {
+    "Id": 3,
+    "email": "moderator@classiflow.com",
+    "name": "Content Moderator",
+    "role": "user",
+    "status": "pending",
+    "invitedBy": 1,
+    "invitedAt": "2024-01-20T00:00:00Z",
+    "joinedAt": null
+  }
+]
