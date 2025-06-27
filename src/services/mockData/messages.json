@@ -1,0 +1,100 @@
+[
+  {
+    "Id": 1,
+    "threadId": "thread_1",
+    "senderId": 1,
+    "recipientId": 2,
+    "subject": "Welcome to the team!",
+    "content": "Hi Sarah! Welcome to our team. I'm excited to work with you on upcoming projects. Let me know if you have any questions about our processes.",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "status": "read",
+    "type": "direct",
+    "attachments": [],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 2,
+    "threadId": "thread_1",
+    "senderId": 2,
+    "recipientId": 1,
+    "subject": "Re: Welcome to the team!",
+    "content": "Thank you so much! I'm really looking forward to contributing. Could you share the project documentation when you get a chance?",
+    "timestamp": "2024-01-15T11:45:00Z",
+    "status": "read",
+    "type": "direct",
+    "attachments": [],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 3,
+    "threadId": "group_general",
+    "senderId": 1,
+    "recipientId": null,
+    "subject": "Weekly Team Meeting - Friday 2PM",
+    "content": "Hi everyone! Don't forget about our weekly team meeting this Friday at 2PM. We'll be discussing the new classified ad features and upcoming deadlines.",
+    "timestamp": "2024-01-16T09:15:00Z",
+    "status": "delivered",
+    "type": "group",
+    "attachments": [],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 4,
+    "threadId": "thread_2",
+    "senderId": 3,
+    "recipientId": 1,
+    "subject": "Bug Report - Category Display",
+    "content": "I noticed an issue with the category display on mobile devices. The subcategories aren't expanding properly. Should I create a ticket for this?",
+    "timestamp": "2024-01-16T14:20:00Z",
+    "status": "delivered",
+    "type": "direct",
+    "attachments": [
+      {
+        "name": "screenshot_bug.png",
+        "size": "245KB",
+        "type": "image/png",
+        "url": "/attachments/screenshot_bug.png"
+      }
+    ],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 5,
+    "threadId": "group_general",
+    "senderId": 2,
+    "recipientId": null,
+    "subject": "New Feature Ideas",
+    "content": "I've been thinking about some improvements for the messaging system. What if we added message reactions and better file sharing? Would love to hear everyone's thoughts!",
+    "timestamp": "2024-01-17T08:30:00Z",
+    "status": "delivered",
+    "type": "group",
+    "attachments": [],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 6,
+    "threadId": "thread_3",
+    "senderId": 1,
+    "recipientId": 3,
+    "subject": "Code Review Request",
+    "content": "Could you review the PR for the new listing filters? I'd appreciate your feedback on the search optimization changes.",
+    "timestamp": "2024-01-17T13:45:00Z",
+    "status": "unread",
+    "type": "direct",
+    "attachments": [],
+    "isSystemMessage": false
+  },
+  {
+    "Id": 7,
+    "threadId": "system_notifications",
+    "senderId": null,
+    "recipientId": 2,
+    "subject": "System Maintenance Scheduled",
+    "content": "System maintenance is scheduled for tonight from 2AM to 4AM EST. The platform will be temporarily unavailable during this time.",
+    "timestamp": "2024-01-17T16:00:00Z",
+    "status": "unread",
+    "type": "system",
+    "attachments": [],
+    "isSystemMessage": true
+  }
+]

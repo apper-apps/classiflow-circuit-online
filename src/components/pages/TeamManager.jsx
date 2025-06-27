@@ -272,6 +272,17 @@ const TeamManager = () => {
                   >
                     Resend
                   </Button>
+)}
+                
+                {member.status === 'active' && member.Id !== currentUser?.Id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    icon="MessageCircle"
+                    onClick={() => window.location.href = `/admin/messages?recipient=${member.Id}`}
+                  >
+                    Message
+                  </Button>
                 )}
                 
                 {canManageRole(member.role) && member.Id !== currentUser?.Id && (

@@ -105,7 +105,14 @@ class TeamService {
       invitedAt: new Date().toISOString()
     };
 
-    return { ...this.teamMembers[index] };
+return { ...this.teamMembers[index] };
+  }
+
+  async getActiveMembers() {
+    await delay(200);
+    return this.teamMembers
+      .filter(member => member.status === 'active')
+      .map(member => ({ ...member }));
   }
 }
 

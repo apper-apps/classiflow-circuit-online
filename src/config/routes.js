@@ -64,6 +64,13 @@ categories: {
     path: '/admin/teams',
     icon: 'Users',
     component: TeamManager
+},
+  messages: {
+    id: 'messages',
+    label: 'Messages',
+    path: '/admin/messages',
+    icon: 'MessageCircle',
+    component: React.lazy(() => import('@/components/pages/MessageCenter'))
   },
   listingDetail: {
     id: 'listingDetail',
