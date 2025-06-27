@@ -532,8 +532,47 @@ const generateEmbedCode = (embed) => {
           </div>
         </div>
 
-{/* Live Preview & Embed Code */}
+{/* Embed Code & Live Preview */}
         <div className="space-y-6">
+          {/* Embed Code Generator */}
+          {(selectedEmbed || formData.url || formData.type === 'classiflow') && (
+            <div className="bg-white rounded-xl border border-surface-200 p-6">
+              <h3 className="text-lg font-semibold text-surface-900 mb-4 flex items-center gap-2">
+                <ApperIcon name="Code" size={18} />
+                HTML Embed Code
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="relative">
+                  <pre className="bg-surface-900 text-surface-100 p-4 rounded-lg text-sm overflow-x-auto">
+                    <code>{generateEmbedCode(selectedEmbed || formData)}</code>
+                  </pre>
+                  <CopyToClipboard
+                    text={generateEmbedCode(selectedEmbed || formData)}
+                    onCopy={() => handleCopyEmbedCode(selectedEmbed || formData)}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute top-2 right-2 bg-surface-800 hover:bg-surface-700 text-surface-200"
+                    >
+                      <ApperIcon name="Copy" size={16} />
+                      Copy
+                    </Button>
+                  </CopyToClipboard>
+                </div>
+                
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <ApperIcon name="Info" size={16} className="inline mr-2" />
+                    Copy this HTML code and paste it into your website where you want the embed to appear.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Live Preview */}
           <div className="bg-white rounded-xl border border-surface-200 p-6">
             <h2 className="text-xl font-semibold text-surface-900 mb-4 flex items-center gap-2">
               <ApperIcon name="Eye" size={20} />
@@ -609,44 +648,6 @@ const generateEmbedCode = (embed) => {
               </div>
             )}
           </div>
-
-          {/* Embed Code Generator */}
-          {selectedEmbed && (
-            <div className="bg-white rounded-xl border border-surface-200 p-6">
-              <h3 className="text-lg font-semibold text-surface-900 mb-4 flex items-center gap-2">
-                <ApperIcon name="Code" size={18} />
-                Embed Code
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="relative">
-                  <pre className="bg-surface-900 text-surface-100 p-4 rounded-lg text-sm overflow-x-auto">
-                    <code>{generateEmbedCode(selectedEmbed)}</code>
-                  </pre>
-                  <CopyToClipboard
-                    text={generateEmbedCode(selectedEmbed)}
-                    onCopy={() => handleCopyEmbedCode(selectedEmbed)}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute top-2 right-2 bg-surface-800 hover:bg-surface-700 text-surface-200"
-                    >
-                      <ApperIcon name="Copy" size={16} />
-                      Copy
-                    </Button>
-                  </CopyToClipboard>
-                </div>
-                
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <ApperIcon name="Info" size={16} className="inline mr-2" />
-                    Copy this code and paste it into your website's HTML where you want the embed to appear.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
