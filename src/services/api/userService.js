@@ -219,6 +219,79 @@ const adminUser = this.users.find(user => user.role === 'admin');
     
 return { ...this.users[index] };
   }
+
+  async login(email, password) {
+    await delay(300);
+    const user = this.users.find(user => 
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    // In a real app, you'd verify the password hash
+    // For demo purposes, we'll accept any password
+    return { ...user };
+  }
+
+  async register(userData) {
+    await delay(400);
+    
+    // Check if email already exists
+    const existingUser = this.users.find(user => 
+      user.email.toLowerCase() === userData.email.toLowerCase()
+    );
+    
+    if (existingUser) {
+      throw new Error('Email already registered');
+    }
+    
+    // Create new user
+    const maxId = Math.max(...this.users.map(user => user.Id), 0);
+    const newUser = {
+      Id: maxId + 1,
+      name: userData.name,
+      email: userData.email,
+      role: userData.role || 'user',
+      listings: [],
+      createdAt: new Date().toISOString(),
+      isActive: true,
+      permissions: []
+    };
+    
+    this.users.push(newUser);
+    return { ...newUser };
+  }
+
+  async validateEmail(email) {
+    await delay(200);
+    const existingUser = this.users.find(user => 
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+    return !existingUser; // Returns true if email is available
+  }
+
+  async requestPasswordReset(email) {
+    await delay(300);
+    const user = this.users.find(user => 
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    // In a real app, you'd send a password reset email
+    return { message: 'Password reset email sent' };
+  }
+
+  async resetPassword(token, newPassword) {
+    await delay(300);
+    // In a real app, you'd validate the reset token
+    // For demo purposes, we'll just return success
+    return { message: 'Password reset successfully' };
+  }
 }
 
 // Create and export singleton instance

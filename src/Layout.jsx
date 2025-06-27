@@ -1,10 +1,21 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import ApperIcon from '@/components/ApperIcon';
-import { routeArray } from '@/config/routes';
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import "@/index.css";
+import brandingData from "@/services/mockData/branding.json";
+import packagesData from "@/services/mockData/packages.json";
+import messagesData from "@/services/mockData/messages.json";
+import teamsData from "@/services/mockData/teams.json";
+import listingsData from "@/services/mockData/listings.json";
+import embedsData from "@/services/mockData/embeds.json";
+import categoriesData from "@/services/mockData/categories.json";
+import usersData from "@/services/mockData/users.json";
+import { routeArray } from "@/config/routes";
+import ApperIcon from "@/components/ApperIcon";
 
 function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
 
   const mainNavItems = routeArray.filter(route => 
@@ -29,8 +40,7 @@ const adminNavItems = routeArray.filter(route =>
             </button>
             <h1 className="text-xl font-bold text-surface-900">ClassiFlow Pro</h1>
           </div>
-          
-          <div className="flex items-center gap-3">
+<div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-2 bg-surface-100 rounded-lg px-3 py-2">
               <ApperIcon name="Search" size={16} className="text-surface-500" />
               <input
@@ -42,6 +52,58 @@ const adminNavItems = routeArray.filter(route =>
             <button className="p-2 rounded-md hover:bg-surface-100 transition-colors">
               <ApperIcon name="Bell" size={20} className="text-surface-600" />
             </button>
+            
+            {/* User Account Section */}
+            <div className="relative">
+              {currentUser ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 p-2 rounded-md hover:bg-surface-100 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
+                        {currentUser.name?.charAt(0) || currentUser.email?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                    <ApperIcon name="ChevronDown" size={16} className="text-surface-600" />
+                  </button>
+                  
+                  {showUserMenu && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-surface-200 rounded-lg shadow-lg py-2 z-50">
+                      <div className="px-4 py-2 border-b border-surface-100">
+                        <p className="text-sm font-medium text-surface-900">{currentUser.name || 'User'}</p>
+                        <p className="text-xs text-surface-500">{currentUser.email}</p>
+                      </div>
+                      <button className="w-full text-left px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors">
+                        Account Settings
+                      </button>
+                      <button 
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleLogin}
+                    className="px-3 py-2 text-sm font-medium text-surface-700 hover:bg-surface-100 rounded-md transition-colors"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={handleAccountSetup}
+                    className="px-3 py-2 text-sm font-medium bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                  >
+                    Create Account
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -139,8 +201,56 @@ const adminNavItems = routeArray.filter(route =>
           <Outlet />
         </main>
       </div>
-    </div>
+</div>
   );
+
+  // Authentication handlers
+  const handleAccountSetup = () => {
+    window.location.href = '/account-setup';
+  };
+
+  const handleLogin = () => {
+    // For demo, simulate login with first user
+    const demoUser = { 
+      Id: 1, 
+      name: 'Demo User', 
+      email: 'demo@example.com',
+      role: 'user'
+    };
+    setCurrentUser(demoUser);
+    localStorage.setItem('currentUser', JSON.stringify(demoUser));
+    setShowUserMenu(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+    setShowUserMenu(false);
+  };
+
+  // Load user on mount
+  React.useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      try {
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (error) {
+        localStorage.removeItem('currentUser');
+      }
+    }
+  }, []);
+
+  // Close user menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.relative')) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
 }
 
 export default Layout;
