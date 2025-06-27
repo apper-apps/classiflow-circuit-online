@@ -569,9 +569,10 @@ const initializePayment = async () => {
         </div>
 </div>
     </div>
-  );
+);
 };
 
+export default PostAd;
 // Payment Form Component
 const PaymentForm = ({ onSubmit, loading }) => {
   const stripe = useStripe();
