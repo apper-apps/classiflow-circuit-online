@@ -1,17 +1,15 @@
-import categoriesData from '../mockData/categories.json';
+import categoriesData from "../mockData/categories.json";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 class CategoryService {
   constructor() {
     this.categories = [...categoriesData];
   }
 
-  async getAll() {
+async getAll() {
     await delay(200);
-return [...this.categories];
+    return [...this.categories];
   }
-
   async getPublicCategories() {
     await delay(150);
     // Return only top-level categories for embed filtering
@@ -90,12 +88,28 @@ return [...this.categories];
     return { ...deletedCategory };
   }
 
-  async updateListingCount(categoryId, increment = 1) {
+async updateListingCount(categoryId, increment = 1) {
     await delay(100);
     const category = this.categories.find(cat => cat.Id === parseInt(categoryId, 10));
     if (category) {
       category.listingCount = Math.max(0, category.listingCount + increment);
     }
+  }
+  async updateOrder(categoryOrders) {
+    await delay(250);
+    
+    // categoryOrders is an array of { Id, position, parentId }
+    categoryOrders.forEach(orderUpdate => {
+      const category = this.categories.find(cat => cat.Id === orderUpdate.Id);
+      if (category) {
+        category.position = orderUpdate.position;
+        if (orderUpdate.parentId !== undefined) {
+          category.parentId = orderUpdate.parentId;
+        }
+      }
+    });
+    
+return true;
   }
 }
 

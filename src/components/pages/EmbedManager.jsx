@@ -13,20 +13,38 @@ function EmbedManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEmbed, setSelectedEmbed] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+const [showForm, setShowForm] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
+    type: 'external', // 'external' or 'classiflow'
     url: '',
     width: '100%',
     height: '400',
     allowFullscreen: true,
     sandbox: true,
-    description: ''
+    description: '',
+    // ClassiFlow specific options
+    categories: [],
+    showSearch: true,
+    maxListings: 50,
+    theme: 'light'
   });
 
-  useEffect(() => {
+useEffect(() => {
     loadEmbeds();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    try {
+      const categoryService = await import('@/services/api/categoryService');
+      const data = await categoryService.default.getPublicCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
+  };
 
   const loadEmbeds = async () => {
     try {
@@ -62,16 +80,21 @@ function EmbedManager() {
     }
   };
 
-  const handleEdit = (embed) => {
+const handleEdit = (embed) => {
     setSelectedEmbed(embed);
     setFormData({
       name: embed.name,
-      url: embed.url,
+      type: embed.type || 'external',
+      url: embed.url || '',
       width: embed.width,
       height: embed.height,
       allowFullscreen: embed.allowFullscreen,
       sandbox: embed.sandbox,
-      description: embed.description
+      description: embed.description,
+      categories: embed.categories || [],
+      showSearch: embed.showSearch !== false,
+      maxListings: embed.maxListings || 50,
+      theme: embed.theme || 'light'
     });
     setShowForm(true);
   };
@@ -90,15 +113,20 @@ function EmbedManager() {
 
   const handleCancel = () => {
     setShowForm(false);
-    setSelectedEmbed(null);
+setSelectedEmbed(null);
     setFormData({
       name: '',
+      type: 'external',
       url: '',
       width: '100%',
       height: '400',
       allowFullscreen: true,
       sandbox: true,
-      description: ''
+      description: '',
+      categories: [],
+      showSearch: true,
+      maxListings: 50,
+      theme: 'light'
     });
   };
 
@@ -109,11 +137,29 @@ function EmbedManager() {
     }));
 };
 
-  const generateEmbedCode = (embed) => {
+const generateEmbedCode = (embed) => {
     if (!embed) return '';
     
     const sandboxAttr = embed.sandbox ? ' sandbox="allow-scripts allow-same-origin"' : '';
     const allowFullscreenAttr = embed.allowFullscreen ? ' allowfullscreen' : '';
+    
+    if (embed.type === 'classiflow') {
+      const baseUrl = window.location.origin;
+      const categoryParams = embed.categories.length > 0 ? `&categories=${embed.categories.join(',')}` : '';
+      const searchParam = embed.showSearch ? '&search=true' : '&search=false';
+      const maxListingsParam = `&max=${embed.maxListings}`;
+      const themeParam = `&theme=${embed.theme}`;
+      
+      const embedUrl = `${baseUrl}/embed/viewer?embedded=true${categoryParams}${searchParam}${maxListingsParam}${themeParam}`;
+      
+      return `<iframe
+  src="${embedUrl}"
+  width="${embed.width}"
+  height="${embed.height}"${sandboxAttr}${allowFullscreenAttr}
+  frameborder="0"
+  title="${embed.name || 'ClassiFlow Marketplace Embed'}"
+></iframe>`;
+    }
     
     return `<iframe
   src="${embed.url}"
@@ -190,7 +236,7 @@ function EmbedManager() {
               {selectedEmbed ? 'Edit Configuration' : 'New Configuration'}
             </h2>
             
-            {showForm ? (
+{showForm ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <FormField
                   label="Configuration Name"
@@ -202,15 +248,147 @@ function EmbedManager() {
                   required
                 />
 
-                <FormField
-                  label="Embed URL"
-                  name="url"
-                  type="url"
-                  value={formData.url}
-                  onChange={(e) => handleInputChange('url', e.target.value)}
-                  placeholder="https://example.com/embed"
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-surface-700 mb-2">
+                    Embed Type
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('type', 'classiflow')}
+                      className={`
+                        p-4 border rounded-lg text-left transition-colors
+                        ${formData.type === 'classiflow' 
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-surface-300 hover:border-surface-400'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <ApperIcon name="Home" size={16} className="text-primary" />
+                        <span className="font-medium">ClassiFlow Website</span>
+                      </div>
+                      <p className="text-sm text-surface-600">
+                        Embed your marketplace with category filtering
+                      </p>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('type', 'external')}
+                      className={`
+                        p-4 border rounded-lg text-left transition-colors
+                        ${formData.type === 'external' 
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-surface-300 hover:border-surface-400'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <ApperIcon name="Globe" size={16} className="text-primary" />
+                        <span className="font-medium">External URL</span>
+                      </div>
+                      <p className="text-sm text-surface-600">
+                        Embed content from external websites
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {formData.type === 'external' && (
+                  <FormField
+                    label="Embed URL"
+                    name="url"
+                    type="url"
+                    value={formData.url}
+                    onChange={(e) => handleInputChange('url', e.target.value)}
+                    placeholder="https://example.com/embed"
+                    required
+                  />
+                )}
+
+                {formData.type === 'classiflow' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-surface-700 mb-2">
+                        Category Filter
+                      </label>
+                      <div className="border border-surface-300 rounded-lg p-3 max-h-48 overflow-y-auto">
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={formData.categories.length === 0}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  handleInputChange('categories', []);
+                                }
+                              }}
+                              className="w-4 h-4 text-primary border-surface-300 rounded focus:ring-primary"
+                            />
+                            <span className="text-sm font-medium">All Categories</span>
+                          </label>
+                          {categories.map(category => (
+                            <label key={category.Id} className="flex items-center gap-2 ml-4">
+                              <input
+                                type="checkbox"
+                                checked={formData.categories.includes(category.Id)}
+                                onChange={(e) => {
+                                  const newCategories = e.target.checked
+                                    ? [...formData.categories, category.Id]
+                                    : formData.categories.filter(id => id !== category.Id);
+                                  handleInputChange('categories', newCategories);
+                                }}
+                                className="w-4 h-4 text-primary border-surface-300 rounded focus:ring-primary"
+                              />
+                              <ApperIcon name={category.icon} size={16} className="text-surface-500" />
+                              <span className="text-sm">{category.name}</span>
+                              <span className="text-xs text-surface-500">({category.listingCount})</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        label="Max Listings"
+                        name="maxListings"
+                        type="number"
+                        value={formData.maxListings}
+                        onChange={(e) => handleInputChange('maxListings', parseInt(e.target.value, 10))}
+                        min="1"
+                        max="100"
+                      />
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-surface-700 mb-2">
+                          Theme
+                        </label>
+                        <select
+                          value={formData.theme}
+                          onChange={(e) => handleInputChange('theme', e.target.value)}
+                          className="w-full px-3 py-2 border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        >
+                          <option value="light">Light</option>
+                          <option value="dark">Dark</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <label className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.showSearch}
+                        onChange={(e) => handleInputChange('showSearch', e.target.checked)}
+                        className="w-4 h-4 text-primary border-surface-300 rounded focus:ring-primary"
+                      />
+                      <span className="text-sm font-medium text-surface-700">
+                        Show Search Bar
+                      </span>
+                    </label>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField

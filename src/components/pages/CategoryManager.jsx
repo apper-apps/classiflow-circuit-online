@@ -1,6 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import ApperIcon from '@/components/ApperIcon';
 import Button from '@/components/atoms/Button';
 import FormField from '@/components/molecules/FormField';
@@ -9,6 +27,82 @@ import ErrorState from '@/components/atoms/ErrorState';
 import EmptyState from '@/components/atoms/EmptyState';
 import categoryService from '@/services/api/categoryService';
 
+const SortableCategory = ({ category, level = 0, children, onEdit, onDelete, onAddSub }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.Id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className={`
+          flex items-center justify-between p-3 bg-white border border-surface-200 rounded-lg mb-2
+          ${isDragging ? 'shadow-lg ring-2 ring-primary/20' : ''}
+        `}
+        style={{ marginLeft: `${level * 24}px` }}
+      >
+        <div className="flex items-center gap-3 flex-1">
+          <div
+            {...attributes}
+            {...listeners}
+            className="p-1 hover:bg-surface-100 rounded cursor-grab active:cursor-grabbing"
+          >
+            <ApperIcon name="GripVertical" size={16} className="text-surface-400" />
+          </div>
+          
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <ApperIcon name={category.icon} size={20} className="text-primary" />
+          </div>
+          
+          <div className="flex-1">
+            <h3 className="font-medium text-surface-900">{category.name}</h3>
+            <p className="text-sm text-surface-600">
+              {category.listingCount} listings
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            icon="Plus"
+            onClick={() => onAddSub(category)}
+          >
+            Add Sub
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            icon="Edit"
+            onClick={() => onEdit(category)}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            icon="Trash2"
+            onClick={() => onDelete(category)}
+            className="text-error hover:bg-error hover:text-white"
+          />
+        </div>
+      </motion.div>
+      {children}
+    </div>
+  );
+};
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,7 +185,7 @@ const CategoryManager = () => {
     } catch (error) {
       toast.error(error.message || 'Failed to save category');
     }
-  };
+};
 
   const handleDelete = async (category) => {
     if (!window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
@@ -117,6 +211,71 @@ const CategoryManager = () => {
     setExpandedCategories(newExpanded);
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeCategory = categories.find(cat => cat.Id === active.id);
+    const overCategory = categories.find(cat => cat.Id === over.id);
+
+    if (!activeCategory || !overCategory) {
+      return;
+    }
+
+    // Only allow reordering within the same parent level
+    if (activeCategory.parentId !== overCategory.parentId) {
+      toast.error('Cannot move categories between different levels');
+      return;
+    }
+
+    const parentId = activeCategory.parentId;
+    const siblingCategories = categories
+      .filter(cat => cat.parentId === parentId)
+      .sort((a, b) => (a.position || 0) - (b.position || 0));
+
+    const oldIndex = siblingCategories.findIndex(cat => cat.Id === active.id);
+    const newIndex = siblingCategories.findIndex(cat => cat.Id === over.id);
+
+    const reorderedCategories = arrayMove(siblingCategories, oldIndex, newIndex);
+    
+    // Create update payload with new positions
+    const updatePayload = reorderedCategories.map((cat, index) => ({
+      Id: cat.Id,
+      position: index,
+      parentId: cat.parentId
+    }));
+
+    try {
+      await categoryService.updateOrder(updatePayload);
+      
+      // Update local state
+      setCategories(prev => {
+        const updated = [...prev];
+        updatePayload.forEach(update => {
+          const category = updated.find(cat => cat.Id === update.Id);
+          if (category) {
+            category.position = update.position;
+          }
+        });
+        return updated;
+      });
+      
+      toast.success('Category order updated successfully');
+    } catch (error) {
+      toast.error('Failed to update category order');
+    }
+  };
+
   const getTopLevelCategories = () => {
     return categories.filter(cat => cat.parentId === null);
   };
@@ -125,73 +284,24 @@ const CategoryManager = () => {
     return categories.filter(cat => cat.parentId === parentId);
   };
 
-  const renderCategory = (category, level = 0) => {
+const renderCategory = (category, level = 0) => {
     const hasChildren = getChildCategories(category.Id).length > 0;
     const isExpanded = expandedCategories.has(category.Id);
+    const childCategories = getChildCategories(category.Id).sort((a, b) => (a.position || 0) - (b.position || 0));
 
     return (
-      <div key={category.Id}>
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center justify-between p-3 bg-white border border-surface-200 rounded-lg mb-2"
-          style={{ marginLeft: `${level * 24}px` }}
-        >
-          <div className="flex items-center gap-3 flex-1">
-            {hasChildren && (
-              <button
-                onClick={() => toggleExpanded(category.Id)}
-                className="p-1 hover:bg-surface-100 rounded"
-              >
-                <ApperIcon 
-                  name={isExpanded ? "ChevronDown" : "ChevronRight"} 
-                  size={16} 
-                  className="text-surface-500"
-                />
-              </button>
-            )}
-            
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <ApperIcon name={category.icon} size={20} className="text-primary" />
-            </div>
-            
-            <div className="flex-1">
-              <h3 className="font-medium text-surface-900">{category.name}</h3>
-              <p className="text-sm text-surface-600">
-                {category.listingCount} listings
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              icon="Plus"
-              onClick={() => {
-                setEditingCategory(null);
-                setFormData({ name: '', icon: 'Folder', parentId: category.Id });
-                setShowModal(true);
-              }}
-            >
-              Add Sub
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              icon="Edit"
-              onClick={() => handleEdit(category)}
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              icon="Trash2"
-              onClick={() => handleDelete(category)}
-              className="text-error hover:bg-error hover:text-white"
-            />
-          </div>
-        </motion.div>
-
+      <SortableCategory
+        key={category.Id}
+        category={category}
+        level={level}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onAddSub={(category) => {
+          setEditingCategory(null);
+          setFormData({ name: '', icon: 'Folder', parentId: category.Id });
+          setShowModal(true);
+        }}
+      >
         <AnimatePresence>
           {hasChildren && isExpanded && (
             <motion.div
@@ -200,13 +310,29 @@ const CategoryManager = () => {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              {getChildCategories(category.Id).map(child => 
-                renderCategory(child, level + 1)
-              )}
+              <div className="ml-6 border-l border-surface-200 pl-4">
+                <button
+                  onClick={() => toggleExpanded(category.Id)}
+                  className="flex items-center gap-2 text-sm text-surface-600 hover:text-surface-900 mb-2"
+                >
+                  <ApperIcon 
+                    name={isExpanded ? "ChevronDown" : "ChevronRight"} 
+                    size={14} 
+                  />
+                  {isExpanded ? 'Collapse' : 'Expand'} subcategories
+                </button>
+                
+                <SortableContext
+                  items={childCategories.map(child => child.Id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {childCategories.map(child => renderCategory(child, level + 1))}
+                </SortableContext>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </SortableCategory>
     );
   };
 
@@ -262,10 +388,23 @@ const CategoryManager = () => {
           onAction={handleCreate}
           icon="FolderTree"
         />
-      ) : (
-        <div className="space-y-2">
-          {getTopLevelCategories().map(category => renderCategory(category))}
-        </div>
+) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="space-y-2">
+            <SortableContext
+              items={getTopLevelCategories().sort((a, b) => (a.position || 0) - (b.position || 0)).map(cat => cat.Id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {getTopLevelCategories()
+                .sort((a, b) => (a.position || 0) - (b.position || 0))
+                .map(category => renderCategory(category))}
+            </SortableContext>
+          </div>
+        </DndContext>
       )}
 
       {/* Modal */}
