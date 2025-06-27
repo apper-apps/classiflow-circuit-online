@@ -25,10 +25,10 @@
 "react-select": "^5.8.0",
     "react-toastify": "11.0.5",
     "socket.io-client": "^4.7.5",
-    "prismjs": "^1.29.0",
+"prismjs": "^1.29.0",
     "react-copy-to-clipboard": "^5.1.0",
-    "@stripe/stripe-js": "^2.4.0",
-    "react-stripe-js": "^2.4.0"
+    "@stripe/stripe-js": "^1.54.2",
+    "react-stripe-js": "^1.1.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
