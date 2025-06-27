@@ -1,0 +1,38 @@
+[
+  {
+    "Id": 1,
+    "name": "Google Maps Store Location",
+    "url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.1!2d-74.006!3d40.7128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQyJzQ2LjEiTiA3NMKwMDAnMjEuNiJX!5e0!3m2!1sen!2sus!4v1234567890",
+    "width": "100%",
+    "height": "400",
+    "allowFullscreen": true,
+    "sandbox": true,
+    "description": "Interactive map showing our main store location",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  },
+  {
+    "Id": 2,
+    "name": "YouTube Product Demo",
+    "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "width": "100%",
+    "height": "315",
+    "allowFullscreen": true,
+    "sandbox": false,
+    "description": "Product demonstration video for featured listings",
+    "createdAt": "2024-01-16T14:20:00.000Z",
+    "updatedAt": "2024-01-16T14:20:00.000Z"
+  },
+  {
+    "Id": 3,
+    "name": "Customer Feedback Form",
+    "url": "https://docs.google.com/forms/d/e/1FAIpQLSc_example/viewform?embedded=true",
+    "width": "100%",
+    "height": "600",
+    "allowFullscreen": false,
+    "sandbox": true,
+    "description": "Embedded feedback form for listing reviews",
+    "createdAt": "2024-01-17T09:15:00.000Z",
+    "updatedAt": "2024-01-17T09:15:00.000Z"
+  }
+]

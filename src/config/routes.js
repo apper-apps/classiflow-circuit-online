@@ -8,6 +8,7 @@ import Home from "@/components/pages/Home";
 import ListingDetail from "@/components/pages/ListingDetail";
 import MyListings from "@/components/pages/MyListings";
 import TeamManager from "@/components/pages/TeamManager";
+import EmbedManager from "@/components/pages/EmbedManager";
 export const routes = {
   home: {
     id: 'home',
@@ -63,8 +64,15 @@ categories: {
     label: 'Team Management',
     path: '/admin/teams',
     icon: 'Users',
-    component: TeamManager
-},
+component: TeamManager
+  },
+  embeds: {
+    id: 'embeds',
+    label: 'Embed Manager',
+    path: '/admin/embeds',
+    icon: 'Monitor',
+    component: EmbedManager
+  },
   messages: {
     id: 'messages',
     label: 'Messages',
