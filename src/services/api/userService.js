@@ -217,6 +217,10 @@ const adminUser = this.users.find(user => user.role === 'admin');
       permissions: [...permissions]
     };
     
-    return { ...this.users[index] };
+return { ...this.users[index] };
   }
 }
+
+// Create and export singleton instance
+const userService = new UserService();
+export default userService;
