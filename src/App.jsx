@@ -1,51 +1,48 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import React, { Suspense } from 'react';
-import Layout from '@/Layout';
-import { routeArray } from '@/config/routes';
-import NotFound from '@/components/pages/NotFound';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import React, { Suspense } from "react";
+import Layout from "@/Layout";
+import "@/index.css";
+import { routeArray } from "@/config/routes";
+import NotFound from "@/components/pages/NotFound";
 
 function App() {
   return (
     <BrowserRouter>
       <div className="h-screen bg-surface-50">
         <Routes>
-          {/* Public embed routes (no layout) */}
-          {routeArray
-            .filter(route => route.isPublic)
-            .map((route) => (
+          <Route path="/" element={<Layout />}>
+            {routeArray.map((route) => (
               <Route
                 key={route.id}
                 path={route.path}
-                element={<route.component />}
+                element={
+                  <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                    {React.createElement(route.component)}
+                  </Suspense>
+                }
               />
             ))}
-          
-          {/* Main application routes (with layout) */}
-          <Route path="/" element={<Layout />}>
-            {routeArray
-              .filter(route => !route.isPublic)
-              .map((route) => (
-                <Route
-                  key={route.id}
-                  path={route.path}
-                  element={<route.component />}
-                />
-              ))}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-          
-          {/* Account Setup Route (public, no layout) */}
-          <Route 
-            path="/account-setup" 
-            element={
+            <Route path="/listing/:id" element={
               <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-                <React.Suspense fallback={<div>Loading...</div>}>
-                  {React.createElement(React.lazy(() => import('@/components/pages/AccountSetup')))}
-                </React.Suspense>
+                {React.createElement(React.lazy(() => import('@/components/pages/ListingDetail')))}
               </Suspense>
-            } 
-          />
+            } />
+            <Route path="/embed/:id" element={
+              <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                {React.createElement(React.lazy(() => import('@/components/pages/EmbedViewer')))}
+              </Suspense>
+            } />
+            <Route path="/payment/success" element={
+              <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                {React.createElement(React.lazy(() => import('@/components/pages/PaymentSuccess')))}
+              </Suspense>
+            } />
+            <Route path="/payment/cancel" element={
+              <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                {React.createElement(React.lazy(() => import('@/components/pages/PaymentCancel')))}
+              </Suspense>
+            } />
         </Routes>
         <ToastContainer
           position="top-right"

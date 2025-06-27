@@ -109,8 +109,8 @@ component: EmbedViewer,
     icon: 'XCircle',
 component: React.lazy(() => import('@/components/pages/PaymentCancel'))
   },
-  accountSetup: {
-id: 'accountSetup',
+accountSetup: {
+    id: 'accountSetup',
     label: 'Account Setup',
     path: '/account-setup',
     icon: 'UserPlus',
