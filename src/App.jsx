@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import React from 'react';
-import Layout from './Layout';
-import { routeArray } from './config/routes';
+import React, { Suspense } from 'react';
+import Layout from '@/Layout';
+import { routeArray } from '@/config/routes';
 import NotFound from '@/components/pages/NotFound';
 
 function App() {
   return (
     <BrowserRouter>
       <div className="h-screen bg-surface-50">
-<Routes>
+        <Routes>
           {/* Public embed routes (no layout) */}
           {routeArray
             .filter(route => route.isPublic)
@@ -30,15 +30,21 @@ function App() {
                   key={route.id}
                   path={route.path}
                   element={<route.component />}
-/>
-            ))}
+                />
+              ))}
             <Route path="*" element={<NotFound />} />
           </Route>
           
           {/* Account Setup Route (public, no layout) */}
           <Route 
             path="/account-setup" 
-            element={React.createElement(React.lazy(() => import('@/components/pages/AccountSetup')))} 
+            element={
+              <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  {React.createElement(React.lazy(() => import('@/components/pages/AccountSetup')))}
+                </React.Suspense>
+              </Suspense>
+            } 
           />
         </Routes>
         <ToastContainer
