@@ -8,6 +8,7 @@ import Badge from '@/components/atoms/Badge';
 import SkeletonLoader from '@/components/atoms/SkeletonLoader';
 import ErrorState from '@/components/atoms/ErrorState';
 import FormField from '@/components/molecules/FormField';
+import MapDisplay from '@/components/molecules/MapDisplay';
 import listingService from '@/services/api/listingService';
 import categoryService from '@/services/api/categoryService';
 
@@ -248,13 +249,27 @@ const ListingDetail = () => {
             </p>
           </div>
 
-          {/* Location */}
-          <div className="flex items-center gap-2 text-surface-600">
-            <ApperIcon name="MapPin" size={18} />
-            <span>
-              {listing.location?.address && `${listing.location.address}, `}
-              {listing.location?.city}, {listing.location?.state} {listing.location?.zipCode}
-            </span>
+{/* Location */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-surface-600">
+              <ApperIcon name="MapPin" size={18} />
+              <span>
+                {listing.location?.address && `${listing.location.address}, `}
+                {listing.location?.city}, {listing.location?.state} {listing.location?.zipCode}
+              </span>
+            </div>
+            
+            {/* Map Display */}
+            {listing.location?.address && listing.location?.city && listing.location?.state && (
+              <MapDisplay
+                address={listing.location.address}
+                city={listing.location.city}
+                state={listing.location.state}
+                zipCode={listing.location.zipCode}
+                title={listing.title}
+                className="mt-3"
+              />
+            )}
           </div>
 
           {/* Description */}
@@ -264,7 +279,6 @@ const ListingDetail = () => {
               {listing.description}
             </p>
           </div>
-
           {/* Custom Fields */}
           {listing.customData && Object.keys(listing.customData).length > 0 && (
             <div className="space-y-3">
