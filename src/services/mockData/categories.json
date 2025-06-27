@@ -101,6 +101,19 @@
     "parentId": 9,
     "icon": "Hammer",
     "listingCount": 34,
-    "customFields": []
+"customFields": []
+  },
+  {
+    "Id": 11,
+    "name": "Garage Sales",
+    "slug": "garage-sales",
+    "parentId": null,
+    "icon": "MapPin",
+    "listingCount": 15,
+    "customFields": [
+      {"name": "saleDate", "type": "date", "required": true},
+      {"name": "startTime", "type": "time", "required": true},
+      {"name": "endTime", "type": "time", "required": true}
+    ]
   }
 ]

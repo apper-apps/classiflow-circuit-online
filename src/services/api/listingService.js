@@ -189,7 +189,23 @@ async create(listingData) {
       pendingListings,
       totalViews,
       averageViews: totalListings > 0 ? Math.round(totalViews / totalListings) : 0
-    };
+};
+  }
+
+  async getGarageSales() {
+    await delay(300);
+    const garageSaleListings = this.listings.filter(listing => 
+      listing.categoryId === 11 && listing.status === 'active'
+    );
+    
+    // Sort by sale date (upcoming first)
+    garageSaleListings.sort((a, b) => {
+      const dateA = new Date(a.customData?.saleDate || '9999-12-31');
+      const dateB = new Date(b.customData?.saleDate || '9999-12-31');
+      return dateA - dateB;
+    });
+
+    return [...garageSaleListings];
   }
 }
 

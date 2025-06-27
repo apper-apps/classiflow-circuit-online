@@ -110,11 +110,18 @@ component: EmbedViewer,
 component: React.lazy(() => import('@/components/pages/PaymentCancel'))
   },
   accountSetup: {
-    id: 'accountSetup',
+id: 'accountSetup',
     label: 'Account Setup',
     path: '/account-setup',
     icon: 'UserPlus',
     component: React.lazy(() => import('@/components/pages/AccountSetup'))
+  },
+  garageSales: {
+    id: 'garageSales',
+    label: 'Garage Sales',
+    path: '/garage-sales',
+    icon: 'MapPin',
+    component: React.lazy(() => import('@/components/pages/GarageSales'))
   }
 };
 

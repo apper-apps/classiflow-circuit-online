@@ -18,8 +18,8 @@ function Layout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
 
-  const mainNavItems = routeArray.filter(route => 
-    ['home', 'browse', 'postAd', 'myListings'].includes(route.id)
+const mainNavItems = routeArray.filter(route => 
+    ['home', 'browse', 'postAd', 'myListings', 'garageSales'].includes(route.id)
   );
 
   const adminNavItems = routeArray.filter(route => 

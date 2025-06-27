@@ -12,59 +12,127 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-const MapDisplay = ({ address, city, state, zipCode, title, className = '' }) => {
+const MapDisplay = ({ 
+  address, 
+  city, 
+  state, 
+  zipCode, 
+  title, 
+  className = '', 
+  listings = [], 
+  onMarkerClick = null, 
+  multipleMarkers = false 
+}) => {
   const [coordinates, setCoordinates] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [markersData, setMarkersData] = useState([]);
 
-  // Construct full address for geocoding
+  // Construct full address for geocoding (single marker mode)
   const fullAddress = `${address ? address + ', ' : ''}${city}, ${state} ${zipCode}`;
+useEffect(() => {
+    if (multipleMarkers && listings.length > 0) {
+      // Geocode multiple listings
+      geocodeMultipleListings();
+    } else if (!multipleMarkers && city && state) {
+      // Single marker mode
+      geocodeSingleAddress();
+    }
+  }, [multipleMarkers, listings, fullAddress]);
 
-  useEffect(() => {
-    const geocodeAddress = async () => {
-      if (!city || !state) {
-        setError('Insufficient location data');
-        setLoading(false);
-        return;
+  const geocodeSingleAddress = async () => {
+    if (!city || !state) {
+      setError('Insufficient location data');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Geocoding service unavailable');
       }
 
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Using Nominatim (OpenStreetMap) geocoding service
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1`
-        );
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
         
-        if (!response.ok) {
-          throw new Error('Geocoding service unavailable');
-        }
-
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          const lat = parseFloat(data[0].lat);
-          const lon = parseFloat(data[0].lon);
-          
-          if (!isNaN(lat) && !isNaN(lon)) {
-            setCoordinates([lat, lon]);
-          } else {
-            throw new Error('Invalid coordinates received');
-          }
+        if (!isNaN(lat) && !isNaN(lon)) {
+          setCoordinates([lat, lon]);
         } else {
-          throw new Error('Location not found');
+          throw new Error('Invalid coordinates received');
         }
-      } catch (err) {
-        setError(err.message || 'Failed to load map');
-        console.error('Geocoding error:', err);
-      } finally {
-        setLoading(false);
+      } else {
+        throw new Error('Location not found');
       }
-    };
+    } catch (err) {
+      setError(err.message || 'Failed to load map');
+      console.error('Geocoding error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    geocodeAddress();
-  }, [fullAddress]);
+  const geocodeMultipleListings = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const markers = [];
+      
+      for (const listing of listings) {
+        const { address, city, state, zipCode } = listing.location;
+        const listingAddress = `${address ? address + ', ' : ''}${city}, ${state} ${zipCode}`;
+        
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(listingAddress)}&limit=1`
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              
+              if (!isNaN(lat) && !isNaN(lon)) {
+                markers.push({
+                  position: [lat, lon],
+                  listing: listing
+                });
+              }
+            }
+          }
+          
+          // Small delay to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (err) {
+          console.warn('Failed to geocode listing:', listing.Id, err);
+        }
+      }
+      
+      if (markers.length > 0) {
+        setMarkersData(markers);
+        // Set center to first marker
+        setCoordinates(markers[0].position);
+      } else {
+        setError('No locations could be found');
+      }
+    } catch (err) {
+      setError('Failed to load map locations');
+      console.error('Multiple geocoding error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -94,18 +162,41 @@ const MapDisplay = ({ address, city, state, zipCode, title, className = '' }) =>
     return null;
   }
 
-  return (
-    <div className={`rounded-lg overflow-hidden border border-surface-200 ${className}`}>
-      <MapContainer
-        center={coordinates}
-        zoom={15}
-        style={{ height: '300px', width: '100%' }}
-        className="z-0"
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
+const renderMarkers = () => {
+    if (multipleMarkers && markersData.length > 0) {
+      return markersData.map((marker, index) => (
+        <Marker 
+          key={marker.listing.Id} 
+          position={marker.position}
+          eventHandlers={{
+            click: () => {
+              if (onMarkerClick) {
+                onMarkerClick(marker.listing);
+              }
+            }
+          }}
+        >
+          <Popup>
+            <div className="text-center max-w-xs">
+              <p className="font-medium text-sm mb-1">{marker.listing.title}</p>
+              <p className="text-xs text-surface-600 mb-2">
+                {marker.listing.location.address && `${marker.listing.location.address}, `}
+                {marker.listing.location.city}, {marker.listing.location.state}
+              </p>
+              {marker.listing.customData?.saleDate && (
+                <p className="text-xs text-primary font-medium">
+                  {new Date(marker.listing.customData.saleDate).toLocaleDateString()} 
+                  {marker.listing.customData.startTime && 
+                    ` • ${marker.listing.customData.startTime}`
+                  }
+                </p>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      ));
+    } else if (!multipleMarkers && coordinates) {
+      return (
         <Marker position={coordinates}>
           <Popup>
             <div className="text-center">
@@ -114,6 +205,24 @@ const MapDisplay = ({ address, city, state, zipCode, title, className = '' }) =>
             </div>
           </Popup>
         </Marker>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className={`rounded-lg overflow-hidden border border-surface-200 ${className}`}>
+      <MapContainer
+        center={coordinates}
+        zoom={multipleMarkers ? 12 : 15}
+        style={{ height: '100%', width: '100%' }}
+        className="z-0"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {renderMarkers()}
       </MapContainer>
     </div>
   );

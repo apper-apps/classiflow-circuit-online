@@ -135,7 +135,88 @@
     "customData": {
       "bedrooms": 2,
       "bathrooms": 2,
-      "squareFeet": 1200
+"squareFeet": 1200
+    }
+  },
+  {
+    "Id": 6,
+    "categoryId": 11,
+    "userId": "user6",
+    "title": "Multi-Family Garage Sale - Electronics, Furniture & More!",
+    "description": "Huge multi-family garage sale featuring electronics, furniture, household items, children's toys, books, and clothing. Everything must go! Cash only. Early birds welcome.",
+    "price": null,
+    "images": [
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "145 Elm Street",
+      "city": "Springfield",
+      "state": "MA",
+      "zipCode": "01108"
+    },
+    "package": "basic",
+    "status": "active",
+    "expiresAt": "2024-02-18T00:00:00Z",
+    "views": 45,
+    "customData": {
+      "saleDate": "2024-02-17",
+      "startTime": "08:00",
+      "endTime": "16:00"
+    }
+  },
+  {
+    "Id": 7,
+    "categoryId": 11,
+    "userId": "user7",
+    "title": "Estate Sale - Antiques, Collectibles & Vintage Items",
+    "description": "Estate sale featuring beautiful antiques, vintage collectibles, fine china, jewelry, and unique home decor. Quality items priced to sell. Professional estate sale company.",
+    "price": null,
+    "images": [
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "267 Maple Avenue",
+      "city": "Boston",
+      "state": "MA",
+      "zipCode": "02102"
+    },
+    "package": "featured", 
+    "status": "active",
+    "expiresAt": "2024-02-20T00:00:00Z",
+    "views": 78,
+    "customData": {
+      "saleDate": "2024-02-19",
+      "startTime": "09:00",
+      "endTime": "15:00"
+    }
+  },
+  {
+    "Id": 8,
+    "categoryId": 11,
+    "userId": "user8",
+    "title": "Moving Sale - Tools, Appliances & Household Items",
+    "description": "Moving sale with tools, small appliances, household items, garden equipment, and miscellaneous items. Everything priced to move quickly. No reasonable offer refused.",
+    "price": null,
+    "images": [
+      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800"
+    ],
+    "videos": [],
+    "location": {
+      "address": "89 Oak Street",
+      "city": "Cambridge",
+      "state": "MA", 
+      "zipCode": "02138"
+    },
+    "package": "basic",
+    "status": "active",
+    "expiresAt": "2024-02-22T00:00:00Z",
+    "views": 32,
+    "customData": {
+      "saleDate": "2024-02-18",
+      "startTime": "07:30",
+      "endTime": "14:00"
     }
   }
 ]
