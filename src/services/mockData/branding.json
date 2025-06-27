@@ -1,0 +1,21 @@
+[
+  {
+    "Id": 1,
+    "name": "Default Theme",
+    "logo": null,
+    "primaryColor": "#3b82f6",
+    "secondaryColor": "#1e40af",
+    "accentColor": "#f59e0b",
+    "backgroundColor": "#ffffff",
+    "textColor": "#1f2937",
+    "fontFamily": "Inter",
+    "fontSize": "16",
+    "headerHeight": "64",
+    "sidebarWidth": "256",
+    "borderRadius": "8",
+    "customCSS": "",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  }
+]

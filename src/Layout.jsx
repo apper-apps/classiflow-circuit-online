@@ -11,8 +11,8 @@ function Layout() {
     ['home', 'browse', 'postAd', 'myListings'].includes(route.id)
   );
 
-  const adminNavItems = routeArray.filter(route => 
-    ['admin', 'categories'].includes(route.id)
+const adminNavItems = routeArray.filter(route => 
+    ['admin', 'categories', 'branding'].includes(route.id)
   );
 
   return (

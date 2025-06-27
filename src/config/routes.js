@@ -4,8 +4,8 @@ import PostAd from '@/components/pages/PostAd';
 import MyListings from '@/components/pages/MyListings';
 import AdminDashboard from '@/components/pages/AdminDashboard';
 import CategoryManager from '@/components/pages/CategoryManager';
+import BrandingManager from '@/components/pages/BrandingManager';
 import ListingDetail from '@/components/pages/ListingDetail';
-
 export const routes = {
   home: {
     id: 'home',
@@ -47,7 +47,14 @@ export const routes = {
     label: 'Categories',
     path: '/admin/categories',
     icon: 'FolderTree',
-    component: CategoryManager
+component: CategoryManager
+  },
+  branding: {
+    id: 'branding',
+    label: 'Branding',
+    path: '/admin/branding',
+    icon: 'Palette',
+    component: BrandingManager
   },
   listingDetail: {
     id: 'listingDetail',
