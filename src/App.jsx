@@ -1,8 +1,8 @@
+import "@/index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import React, { Suspense } from "react";
 import Layout from "@/Layout";
-import "@/index.css";
 import { routeArray } from "@/config/routes";
 import NotFound from "@/components/pages/NotFound";
 
@@ -23,7 +23,7 @@ function App() {
                 }
               />
             ))}
-            <Route path="/listing/:id" element={
+<Route path="/listing/:id" element={
               <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
                 {React.createElement(React.lazy(() => import('@/components/pages/ListingDetail')))}
               </Suspense>
@@ -42,7 +42,9 @@ function App() {
               <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
                 {React.createElement(React.lazy(() => import('@/components/pages/PaymentCancel')))}
               </Suspense>
-            } />
+} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
         <ToastContainer
           position="top-right"
